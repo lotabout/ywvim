@@ -316,7 +316,7 @@ endfunction "}}}
 function s:Ywvim_keymap_punc(t) "{{{
     if a:t == 1
         for p in keys(s:ywvim_{b:ywvim_parameters["active_mb"]}_puncdic)
-            execute 'lnoremap <buffer> <expr> '.escape(p, '\|')." <SID>Ywvim_puncp(".string(escape(p, '\|')).")"
+            execute 'lnoremap <buffer> <expr> '.p." <SID>Ywvim_puncp(".string(p).")"
         endfor
     elseif a:t == 0
         for p in keys(s:ywvim_{b:ywvim_parameters["active_mb"]}_puncdic)
@@ -729,6 +729,7 @@ function s:Ywvim_echofinalresult(list) "{{{1
     endfor
     echohl None
 endfunction "}}}
+
 
 function s:Ywvim_enmode() "{{{
     echohl ywvimIMname
