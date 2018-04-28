@@ -325,19 +325,34 @@ function s:Ywvim_keymap_punc(t) "{{{
     endif
 endfunction "}}}
 
+function s:Ywvim_ReturnPunc(p) "{{{
+    if !exists("s:last_punc")
+        let s:last_punc = ''
+    endif
+
+    " support list number e.g. '1.'
+    let ret = a:p
+    if a:p == '。' && '0' <= s:last_punc && s:last_punc <= '9'
+        let ret = '.'
+    endif
+
+    let s:last_punc = ret
+    return ret
+endfunction "}}}
+
 function s:Ywvim_puncp(p) "{{{
     let pmap = s:ywvim_{b:ywvim_parameters["active_mb"]}_puncdic[a:p]
     let lenpmap = len(pmap)
     if lenpmap == 1
-        return pmap[0]
+        return <SID>Ywvim_ReturnPunc(pmap[0])
     else
         let pid = char2nr(a:p)
         if !exists('b:ywvim_{b:ywvim_parameters["active_mb"]}_punc_{pid}')
             let b:ywvim_{b:ywvim_parameters["active_mb"]}_punc_{pid} = 1
-            return pmap[0]
+            return <SID>Ywvim_ReturnPunc(pmap[0])
         else
             unlet b:ywvim_{b:ywvim_parameters["active_mb"]}_punc_{pid}
-            return pmap[1]
+            return <SID>Ywvim_ReturnPunc(pmap[1])
         endif
     endif
 endfunction "}}}
