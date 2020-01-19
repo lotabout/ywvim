@@ -33,4 +33,5 @@ let g:ywvim_preconv = 'g2b'
 let g:ywvim_conv = ''
 let g:ywvim_lockb = 1
 let g:ywvim_theme = 'dark'
+let g:ywvim_intelligent_punc = 1
 ```
