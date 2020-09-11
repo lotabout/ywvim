@@ -16,6 +16,7 @@ Put these in your `.vimrc`:
 let g:ywvim_ims=[
             \['wb', '五笔', 'wubi.ywvim'],
             \['py', '拼音', 'pinyin.ywvim'],
+            \['xh', '小鹤', 'xiaohe.ywvim'],
             \]
 
 let g:ywvim_py = { 'helpim':'wb', 'gb':0 }
