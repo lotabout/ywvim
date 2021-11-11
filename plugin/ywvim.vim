@@ -87,13 +87,18 @@ function s:Ywvim_initvar() " Load global user vars.{{{
                 \['ywvim_inputen_keys', ""],
                 \['ywvim_extraimbarlength', 0],
                 \]
+    call add(varlst, ['ywvim_popupwin', 0])
+    call add(varlst, ['ywvim_floatwin', 0])
     if has("popupwin")
         call add(varlst, ['ywvim_popupwin', 1])
         call add(varlst, ['ywvim_popupwin_follow_cursor', 1])
         call add(varlst, ['ywvim_popupwin_horizontal', 1])
         call add(varlst, ['ywvim_popupwin_force_cmdline', 0])
-    else
-        call add(varlst, ['ywvim_popupwin', 0])
+    elseif exists('*nvim_open_win')
+        call add(varlst, ['ywvim_floatwin', 1])
+        call add(varlst, ['ywvim_floatwin_follow_cursor', 1])
+        call add(varlst, ['ywvim_floatwin_horizontal', 1])
+        call add(varlst, ['ywvim_floatwin_force_cmdline', 0])
     endif
     for v in varlst
         call <SID>Ywvim_SetVar(v[0], v[1])
@@ -589,6 +594,8 @@ function s:Ywvim_char(key,...) "{{{1 输入中文的主要模块
                 let b:ywuvim_candidatelist = <SID>Ywvim_comp(b:ywuvim_rawword,s:ywvim_{b:ywvim_parameters["active_mb"]}_main_idxs,s:ywvim_{b:ywvim_parameters["active_mb"]}_main_idxe)
                 if s:ywvim_popupwin && (mode() != 'c' || s:ywvim_popupwin_force_cmdline) " FIXME popupwin can't be closed when at cmdline
                     call <SID>Ywvim_popupfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
+                elseif s:ywvim_floatwin && (mode() != 'c' || s:ywvim_floatwin_force_cmdline) " FIXME floatwin can't be closed when at cmdline
+                    call <SID>Ywvim_floatfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
                 else
                     call <SID>Ywvim_echofinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
                 endif
@@ -635,8 +642,10 @@ function s:Ywvim_char(key,...) "{{{1 输入中文的主要模块
             if (s:ywvim_autoinput == 2) && (len(s:ywvim_pgbuf[s:ywvim_pagenr]) == 1)
                 return <SID>Ywvim_ReturnChar(s:ywvim_pgbuf[s:ywvim_pagenr][0].word)
             endif
-            if s:ywvim_popupwin && (mode() != 'c' || s:ywvim_popupwin_force_cmdline) 
+            if s:ywvim_popupwin && (mode() != 'c' || s:ywvim_popupwin_force_cmdline)
                 call <SID>Ywvim_popupfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
+            elseif s:ywvim_floatwin && (mode() != 'c' || s:ywvim_floatwin_force_cmdline)
+                call <SID>Ywvim_floatfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
             else
                 call <SID>Ywvim_echofinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
             endif
@@ -659,6 +668,8 @@ function s:Ywvim_char(key,...) "{{{1 输入中文的主要模块
             endif
             if s:ywvim_popupwin && (mode() != 'c' || s:ywvim_popupwin_force_cmdline)
                 call <SID>Ywvim_popupfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', s:ywvim_pgbuf[s:ywvim_pagenr]])
+            elseif s:ywvim_floatwin && (mode() != 'c' || s:ywvim_floatwin_force_cmdline)
+                call <SID>Ywvim_floatfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', s:ywvim_pgbuf[s:ywvim_pagenr]])
             else
                 call <SID>Ywvim_echofinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', s:ywvim_pgbuf[s:ywvim_pagenr]])
             endif
@@ -673,6 +684,8 @@ function s:Ywvim_char(key,...) "{{{1 输入中文的主要模块
             endif
             if s:ywvim_popupwin && (mode() != 'c' || s:ywvim_popupwin_force_cmdline)
                 call <SID>Ywvim_popupfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', s:ywvim_pgbuf[s:ywvim_pagenr]])
+            elseif s:ywvim_floatwin && (mode() != 'c' || s:ywvim_floatwin_force_cmdline)
+                call <SID>Ywvim_floatfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', s:ywvim_pgbuf[s:ywvim_pagenr]])
             else
                 call <SID>Ywvim_echofinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', s:ywvim_pgbuf[s:ywvim_pagenr]])
             endif
@@ -697,6 +710,8 @@ function s:Ywvim_char(key,...) "{{{1 输入中文的主要模块
             else
                 if s:ywvim_popupwin && (mode() != 'c' || s:ywvim_popupwin_force_cmdline)
                     call <SID>Ywvim_popupfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
+                elseif s:ywvim_floatwin && (mode() != 'c' || s:ywvim_floatwin_force_cmdline)
+                    call <SID>Ywvim_floatfinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
                 else
                     call <SID>Ywvim_echofinalresult([b:ywuvim_displayingword, '[' . (s:ywvim_pagenr + 1) . ']', b:ywuvim_candidatelist])
                 endif
@@ -888,7 +903,7 @@ function s:Ywvim_popupfinalresult(list) "{{{1
         call prop_type_add('ywvimCandtHlp', {'bufnr': bufnr, 'highlight': 'ywvimIMnormal'})
     endif
     call prop_add(1, 1, #{
-                \bufnr: bufnr, 
+                \bufnr: bufnr,
                 \length: len(a:list[0]),
                 \type: 'ywvimCandtBar'
                 \})
@@ -926,6 +941,101 @@ function s:Ywvim_popupfinalresult(list) "{{{1
             let colstart_nr=colstart_hlp+collen_hlp+1
         endif
     endfor
+    redraw
+    if mode() == 'c'
+        echo ':' . getcmdline()
+        " 20200103 Fixed KnightG's issue that cmdline has no proper redraw. 20181108 return sb." \<BS>" is dirty way.
+    endif
+endfunction
+
+function s:Ywvim_floatfinalresult(list) "{{{1
+    " a:list[0] 码  a:list[1] 序号
+    let candtitle = a:list[0] . ' ' . a:list[1]
+    let len_candtitle=len(candtitle)
+    let floatdisplay = [candtitle]
+    let floatitem=0
+    let floatlinemaxlen=len_candtitle
+    let floatwrapp=0
+    let floatcolstart= mode() != 'c' ? col('.') : getcmdpos()
+    let float_textpropdic={}
+    let float_textpropdic[floatitem]=[len_candtitle]
+    for c in a:list[2][0:-1]
+        let floatitem+=1
+        let floatline=c.nr . '.' . c.word . c.suf . c.help
+        let floatlinelen=len(floatline)
+        let floatlinemaxlen=max([floatlinemaxlen, floatlinelen])
+        if !floatwrapp && (floatlinelen > &columns)
+            let floatwrapp=1
+            let floatcolstart=1
+        endif
+        call add(floatdisplay, floatline)
+        let float_textpropdic[floatitem]=[floatlinelen, len(c.nr)+1, len(c.word), len(c.suf), len(c.help)]
+    endfor
+    while floatitem < s:ywvim_{b:ywvim_parameters["active_mb"]}_listmax
+        let floatitem+=1
+        call add(floatdisplay, '')
+        let float_textpropdic[floatitem]=[0, 0, 0, 0, 0]
+    endwhile
+    if s:ywvim_floatwin_horizontal
+        let floatdisplay = join(floatdisplay, ' ')
+        let len_floatdisplay=len(floatdisplay)
+        if !floatwrapp && (len_floatdisplay > &columns)
+            let floatwrapp=1
+            let floatcolstart=1
+        endif
+        let floatlinemaxlen=max([floatlinemaxlen, len_floatdisplay])
+    endif
+    if exists("s:ywvim_floatbuf")
+        call nvim_buf_set_lines(s:ywvim_floatbuf, 0, -1, v:true, [floatdisplay])
+    else
+        if s:ywvim_floatwin_follow_cursor && mode() != 'c'
+            let s:ywvim_floatbuf = nvim_create_buf(v:false, v:true)
+            call nvim_buf_set_lines(s:ywvim_floatbuf, 0, -1, v:true, [floatdisplay])
+            let opts = {'relative': 'cursor', 'width': floatlinemaxlen, 'height': 1, 'col': 0, 'row': 1, 'style': 'minimal'}
+            let s:ywvim_floatwinid = nvim_open_win(s:ywvim_floatbuf, 0, opts)
+        else
+            let s:ywvim_floatbuf = nvim_create_buf(v:false, v:true)
+            call nvim_buf_set_lines(s:ywvim_floatbuf, 0, -1, v:true, [floatdisplay])
+            let opts = {'relative': 'win',
+                        \'width': floatlinemaxlen,
+                        \'height': 1,
+                        \'col': floatcolstart,
+                        \'row': &lines-&cmdheight,
+                        \'style': 'minimal'}
+            let s:ywvim_floatwinid = nvim_open_win(s:ywvim_floatbuf, 0, opts)
+        endif
+    endif
+
+    call win_execute(s:ywvim_floatwinid, 'hi def link ywvimCandtStart IncSearch')
+    call win_execute(s:ywvim_floatwinid, 'hi def link ywvimCandtBar ErrorMsg')
+    call win_execute(s:ywvim_floatwinid, 'hi def link ywvimCandtNr ywvimIMnr')
+    call win_execute(s:ywvim_floatwinid, 'hi def link ywvimCandtWrd ywvimIMnormal')
+    call win_execute(s:ywvim_floatwinid, 'hi def link ywvimCandtSuf ywvimIMcode')
+    call win_execute(s:ywvim_floatwinid, 'hi def link ywvimCandtHlp ywvimIMnormal')
+
+    call nvim_buf_add_highlight(s:ywvim_floatbuf, -1, "ywvimCandtBar", 0, 0, len(a:list[0]))
+
+    let colstart_nr = s:ywvim_floatwin_horizontal ? float_textpropdic[0][0]+1 : 0
+    for n in range(1,s:ywvim_{b:ywvim_parameters["active_mb"]}_listmax)
+        let linestart = s:ywvim_floatwin_horizontal ? 0 : n
+        let collen_nr=float_textpropdic[n][1]
+        let colstart_wrd=colstart_nr+collen_nr
+        let collen_wrd=float_textpropdic[n][2]
+        let colstart_suf=colstart_wrd+collen_wrd
+        let collen_suf=float_textpropdic[n][3]
+        let colstart_hlp=colstart_suf+collen_suf
+        let collen_hlp=float_textpropdic[n][4]
+
+        call nvim_buf_add_highlight(s:ywvim_floatbuf, -1, "ywvimCandtNr", linestart, colstart_nr, colstart_nr + collen_nr)
+        call nvim_buf_add_highlight(s:ywvim_floatbuf, -1, "ywvimCandtWrd", linestart, colstart_wrd, colstart_wrd + collen_wrd)
+        call nvim_buf_add_highlight(s:ywvim_floatbuf, -1, "ywvimCandtSuf", linestart, colstart_suf, colstart_suf + collen_suf)
+        call nvim_buf_add_highlight(s:ywvim_floatbuf, -1, "ywvimCandtHlp", linestart, colstart_hlp, colstart_hlp + collen_hlp)
+
+        if s:ywvim_floatwin_horizontal
+            let colstart_nr=colstart_hlp+collen_hlp+1
+        endif
+    endfor
+
     redraw
     if mode() == 'c'
         echo ':' . getcmdline()
@@ -1062,9 +1172,15 @@ function s:Ywvim_ReturnChar(s) "{{{
     if s:ywvim_popupwin && (mode() != 'c' || s:ywvim_popupwin_force_cmdline)
         call popup_close(s:ywvim_popupwinid)
         unlet s:ywvim_popupwinid
+    elseif s:ywvim_floatwin && (mode() != 'c' || s:ywvim_floatwin_force_cmdline)
+        call nvim_win_close(s:ywvim_floatwinid, v:true)
+        unlet s:ywvim_floatwinid
+        unlet s:ywvim_floatbuf
     endif
     if mode() == 'c'
         if s:ywvim_popupwin && s:ywvim_popupwin_force_cmdline " FIXME also clear cmdline complete list.
+            redraw
+        elseif s:ywvim_floatwin && s:ywvim_floatwin_force_cmdline
             redraw
         endif
         echo ':' . getcmdline()
@@ -1104,6 +1220,8 @@ function s:Ywvim_Indicator() "{{{1 输入法开关提示 FIXME
                 let s:ywvim_imname_statusbarid = popup_create(b:ywvim_parameters["idt"], #{line: idtline,col: idtcol,pos: 'botright',highlight: 'Cursor'})
             endif
         endif
+
+        " TODO: handle floating window
     else
         if exists('s:ywvim_imname_statusbarid')
             call popup_close(s:ywvim_imname_statusbarid)
@@ -1153,8 +1271,12 @@ function s:Ywvim_toggle_off(mode) "{{{1
     unlet b:ywvim_parameters["idt"]
     " FIXME call <SID>Ywvim_Indicator()
     let b:ywvim_parameters["idt"] = 0
-    execute 'highlight lCursor '.s:ywvim_hl_lcursor
-    execute 'highlight Cursor '.s:ywvim_hl_cursor
+    if exists('s:ywvim_hl_lcursor')
+        execute 'highlight lCursor '.s:ywvim_hl_lcursor
+    endif
+    if exists('s:ywvim_hl_cursor')
+        execute 'highlight Cursor '.s:ywvim_hl_cursor
+    endif
     return ''
 endfunction "}}}
 
