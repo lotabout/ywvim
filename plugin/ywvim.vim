@@ -351,9 +351,9 @@ function s:Ywvim_keymap_punc(t) "{{{
         for p in keys(s:ywvim_{b:ywvim_parameters["active_mb"]}_puncdic)
             " fix \ bug
             if match(&cpoptions, 'B') != -1
-                execute 'lnoremap <buffer> <expr> '.escape(p, '|')." <SID>Ywvim_puncp(".string(escape(p, '|')).")"
+                execute 'lnoremap <silent> <buffer> '.escape(p, '|')." <C-r>=<SID>Ywvim_puncp(".string(escape(p, '|')).")<CR>"
             else
-                execute 'lnoremap <buffer> <expr> '.escape(p, '\|')." <SID>Ywvim_puncp(".string(escape(p, '\|')).")"
+                execute 'lnoremap <silent> <buffer> '.escape(p, '\|')." <C-r>=<SID>Ywvim_puncp(".string(escape(p, '\|')).")<CR>"
             endif
         endfor
     elseif a:t == 0
@@ -438,7 +438,7 @@ function s:Ywvim_keymap(setup,cat) "{{{
     " a:cat: a: all; k: normal keys; p: pychar; e: enchar; y: onepinyin.
     if (a:cat == 'a') || (a:cat == 'k')
         for key in sort(split(s:ywvim_{b:ywvim_parameters["active_mb"]}_usedcodes,'\zs'))
-            execute 'lnoremap <buffer> <expr> '.escape(key, '\|').'  <SID>Ywvim_char("'.key.'")'
+            execute 'lnoremap <silent> <buffer> '.escape(key, '\|').' <C-r>=<SID>Ywvim_char("'.key.'")<CR>'
         endfor
     endif
     if (a:cat == 'a') || (a:cat == 'p')
@@ -448,12 +448,12 @@ function s:Ywvim_keymap(setup,cat) "{{{
     endif
     if (a:cat == 'a') || (a:cat == 'e')
         if s:ywvim_{b:ywvim_parameters["active_mb"]}_enchar != ''
-            execute 'lnoremap <buffer> <expr> '.s:ywvim_{b:ywvim_parameters["active_mb"]}_enchar.' <SID>Ywvim_NewEnmode("'.s:ywvim_{b:ywvim_parameters["active_mb"]}_enchar.'")'
+            execute 'lnoremap <silent> <buffer> '.s:ywvim_{b:ywvim_parameters["active_mb"]}_enchar.' <C-r>=<SID>Ywvim_NewEnmode("'.s:ywvim_{b:ywvim_parameters["active_mb"]}_enchar.'")<CR>'
         endif
     endif
     if (a:cat == 'a') || (a:cat == 'y')
         if s:ywvim_{b:ywvim_parameters["active_mb"]}_pychar != ''
-            execute 'lnoremap <buffer> <expr> '.escape(s:ywvim_{b:ywvim_parameters["active_mb"]}_pychar, '\').' <SID>Ywvim_onepinyin()'
+            execute 'lnoremap <silent> <buffer> '.escape(s:ywvim_{b:ywvim_parameters["active_mb"]}_pychar, '\').' <C-r>=<SID>Ywvim_onepinyin()<CR>'
         endif
     endif
     if (a:cat == 'a')
@@ -977,7 +977,7 @@ function s:Ywvim_NewEnmode(char) "{{{
             let mode=mode()
             let b:ywvim_parameters["enmode"] = b:ywvim_parameters["active_mb"]
             call <SID>Ywvim_LoadNewIM('ywvimenmode')
-            execute 'lnoremap <buffer> <expr> '.a:char.' <SID>Ywvim_NewEnmode("'.a:char.'")'
+            execute 'lnoremap <silent> <buffer> '.a:char.' <C-r>=<SID>Ywvim_NewEnmode("'.a:char.'")<CR>'
             execute 'highlight lCursor '.s:ywvim_hl_lcursor
             execute 'highlight Cursor '.s:ywvim_hl_cursor
             " let enstr = enstr . mode()=='c' ? " \<BS>" : " \<BS>"
@@ -992,7 +992,7 @@ function s:Ywvim_NewEnmode(char) "{{{
         let mode=mode()
         let b:ywvim_parameters["enmode"] = b:ywvim_parameters["active_mb"]
         call <SID>Ywvim_LoadNewIM('ywvimenmode')
-        execute 'lnoremap <buffer> <expr> '.a:char.' <SID>Ywvim_NewEnmode("'.a:char.'")'
+        execute 'lnoremap <silent> <buffer> '.a:char.' <C-r>=<SID>Ywvim_NewEnmode("'.a:char.'")<CR>'
         execute 'highlight lCursor '.s:ywvim_hl_lcursor
         execute 'highlight Cursor '.s:ywvim_hl_cursor
         return mode()=='c' ? " \<BS>" : ""
