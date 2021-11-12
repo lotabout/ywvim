@@ -1266,8 +1266,12 @@ function s:Ywvim_toggle_off(mode) "{{{1
         unlet b:{p}
     endfor
     let b:ywvim_parameters["mode"] = substitute(b:ywvim_parameters["mode"], a:mode, '', '')
-    setlocal iminsert=0
-    lmapclear <buffer>
+    if !has('nvim')
+        " iminsert behave differently between vim and neovim, the below lines
+        " won't work in neovim
+        setlocal iminsert=0
+        lmapclear <buffer>
+    endif
     unlet b:ywvim_parameters["idt"]
     " FIXME call <SID>Ywvim_Indicator()
     let b:ywvim_parameters["idt"] = 0
