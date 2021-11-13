@@ -991,7 +991,13 @@ function s:Ywvim_floatfinalresult(list) "{{{1
         if s:ywvim_floatwin_follow_cursor && mode() != 'c'
             let s:ywvim_floatbuf = nvim_create_buf(v:false, v:true)
             call nvim_buf_set_lines(s:ywvim_floatbuf, 0, -1, v:true, [floatdisplay])
-            let opts = {'relative': 'cursor', 'width': floatlinemaxlen, 'height': 1, 'col': 0, 'row': 1, 'style': 'minimal'}
+            let opts = {'relative': 'cursor',
+                       \'width': floatlinemaxlen,
+                       \'height': 1,
+                       \'col': 0,
+                       \'row': 1,
+                       \'style': 'minimal',
+                       \'zindex': 150}
             let s:ywvim_floatwinid = nvim_open_win(s:ywvim_floatbuf, 0, opts)
         else
             let s:ywvim_floatbuf = nvim_create_buf(v:false, v:true)
@@ -1001,7 +1007,8 @@ function s:Ywvim_floatfinalresult(list) "{{{1
                         \'height': 1,
                         \'col': floatcolstart,
                         \'row': &lines-&cmdheight,
-                        \'style': 'minimal'}
+                        \'style': 'minimal',
+                        \'zindex': 150}
             let s:ywvim_floatwinid = nvim_open_win(s:ywvim_floatbuf, 0, opts)
         endif
     endif
