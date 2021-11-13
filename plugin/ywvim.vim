@@ -1282,10 +1282,10 @@ function s:Ywvim_toggle_off(mode) "{{{1
     unlet b:ywvim_parameters["idt"]
     " FIXME call <SID>Ywvim_Indicator()
     let b:ywvim_parameters["idt"] = 0
-    if exists('s:ywvim_hl_lcursor')
+    if exists('s:ywvim_hl_lcursor') && s:ywvim_hl_lcursor =~ '='
         execute 'highlight lCursor '.s:ywvim_hl_lcursor
     endif
-    if exists('s:ywvim_hl_cursor')
+    if exists('s:ywvim_hl_cursor') && s:ywvim_hl_cursor =~ '='
         execute 'highlight Cursor '.s:ywvim_hl_cursor
     endif
     return ''
