@@ -850,7 +850,7 @@ function s:Ywvim_popupfinalresult(list) "{{{1
     for c in a:list[2][0:-1]
         let popupitem+=1
         let popupline=c.nr . '.' . c.word . c.suf . c.help
-        let popuplinelen=len(popupline)
+        let popuplinelen=strdisplaywidth(popupline)
         let popuplinemaxlen=max([popuplinemaxlen, popuplinelen])
         if !popupwrapp && (popuplinelen > &columns)
             let popupwrapp=1
@@ -866,7 +866,7 @@ function s:Ywvim_popupfinalresult(list) "{{{1
     endwhile
     if s:ywvim_popupwin_horizontal
         let popupdisplay = join(popupdisplay, ' ')
-        let len_popupdisplay=len(popupdisplay)
+        let len_popupdisplay=strdisplaywidth(popupdisplay)
         if !popupwrapp && (len_popupdisplay > &columns)
             let popupwrapp=1
             let popupcolstart=1
@@ -962,7 +962,7 @@ function s:Ywvim_floatfinalresult(list) "{{{1
     for c in a:list[2][0:-1]
         let floatitem+=1
         let floatline=c.nr . '.' . c.word . c.suf . c.help
-        let floatlinelen=len(floatline)
+        let floatlinelen=strdisplaywidth(floatline)
         let floatlinemaxlen=max([floatlinemaxlen, floatlinelen])
         if !floatwrapp && (floatlinelen > &columns)
             let floatwrapp=1
@@ -978,7 +978,7 @@ function s:Ywvim_floatfinalresult(list) "{{{1
     endwhile
     if s:ywvim_floatwin_horizontal
         let floatdisplay = join(floatdisplay, ' ')
-        let len_floatdisplay=len(floatdisplay)
+        let len_floatdisplay=strdisplaywidth(floatdisplay)
         if !floatwrapp && (len_floatdisplay > &columns)
             let floatwrapp=1
             let floatcolstart=1
@@ -986,6 +986,7 @@ function s:Ywvim_floatfinalresult(list) "{{{1
         let floatlinemaxlen=max([floatlinemaxlen, len_floatdisplay])
     endif
     if exists("s:ywvim_floatbuf")
+        call nvim_win_set_width(s:ywvim_floatwinid, floatlinemaxlen)
         call nvim_buf_set_lines(s:ywvim_floatbuf, 0, -1, v:true, [floatdisplay])
     else
         if s:ywvim_floatwin_follow_cursor && mode() != 'c'
