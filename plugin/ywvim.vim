@@ -971,11 +971,6 @@ function s:Ywvim_floatfinalresult(list) "{{{1
         call add(floatdisplay, floatline)
         let float_textpropdic[floatitem]=[floatlinelen, len(c.nr)+1, len(c.word), len(c.suf), len(c.help)]
     endfor
-    while floatitem < s:ywvim_{b:ywvim_parameters["active_mb"]}_listmax
-        let floatitem+=1
-        call add(floatdisplay, '')
-        let float_textpropdic[floatitem]=[0, 0, 0, 0, 0]
-    endwhile
     if s:ywvim_floatwin_horizontal
         let floatdisplay = join(floatdisplay, ' ')
         let len_floatdisplay=strdisplaywidth(floatdisplay)
@@ -1024,7 +1019,7 @@ function s:Ywvim_floatfinalresult(list) "{{{1
     call nvim_buf_add_highlight(s:ywvim_floatbuf, -1, "ywvimCandtBar", 0, 0, len(a:list[0]))
 
     let colstart_nr = s:ywvim_floatwin_horizontal ? float_textpropdic[0][0]+1 : 0
-    for n in range(1,s:ywvim_{b:ywvim_parameters["active_mb"]}_listmax)
+    for n in range(1,len(float_textpropdic)-1)
         let linestart = s:ywvim_floatwin_horizontal ? 0 : n
         let collen_nr=float_textpropdic[n][1]
         let colstart_wrd=colstart_nr+collen_nr
