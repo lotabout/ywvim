@@ -15,6 +15,7 @@ Put these in your `.vimrc`:
 ```
 let g:ywvim_ims=[
             \['wb', '五笔', 'wubi.ywvim'],
+            \['jdwb', '极点五笔', 'wubi86_jidian.ywvim'],
             \['py', '拼音', 'pinyin.ywvim'],
             \['xh', '小鹤', 'xiaohe.ywvim'],
             \]
