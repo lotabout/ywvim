@@ -163,7 +163,7 @@ function s:Ywvim_loadmb(...) "{{{
         let s:ywvim_{mbintername}_name = substitute(matchstr(matchstr(descriptlst, '^Name'), '^[^=]\+=\s*\zs.*'), '\s', '', 'g')
         let s:ywvim_{mbintername}_nameabbr = matchstr(s:ywvim_{mbintername}_name, '^.')
         let s:ywvim_{mbintername}_usedcodes =substitute(matchstr(matchstr(descriptlst, '^UsedCodes'), '^[^=]\+=\s*\zs.*'), '\s', '', 'g')
-        let s:ywvim_{mbintername}_usedcodes_specialpunc ="'".substitute(matchstr(matchstr(descriptlst, '^SpecialPunctuation'), '^[^=]\+=\s*\zs.*'), '\s', '', 'g')."'"
+        let s:ywvim_{mbintername}_usedcodes_specialpunc = substitute(matchstr(matchstr(descriptlst, '^SpecialPunctuation'), '^[^=]\+=\s*\zs.*'), '\s', '', 'g')
         let s:ywvim_{mbintername}_endcodes = '[' . matchstr(matchstr(descriptlst, '^EndCodes'), '^[^=]\+=\zs.*') . ']'
         call <SID>Ywvim_SetMbInitVar(mbintername, 'maxphraselength', matchstr(matchstr(descriptlst, '^MaxElement'), '^[^=]\+=\s*\zs.*'))
         let s:ywvim_{mbintername}_enchar = matchstr(matchstr(descriptlst, '^EnChar'), '^[^=]\+=\s*\zs.*')
