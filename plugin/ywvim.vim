@@ -416,7 +416,7 @@ function s:Ywvim_puncp(p) "{{{
             let returnpunc=pmap[0]
         endif
     else
-        let pid = char2nr(a:p)
+        let pid = 'p' . char2nr(a:p) " 裸的数字在 C-R = 执行后状态不保存
         if !exists('b:ywvim_{b:ywvim_parameters["active_mb"]}_punc_{pid}')
             let b:ywvim_{b:ywvim_parameters["active_mb"]}_punc_{pid} = 1
             if s:ywvim_intelligent_punc
