@@ -66,8 +66,8 @@ def loadmb(mb, fp):
 
 def save_mb_to(mb, fp):
     fp.write(mb_header)
-    for key, chars in mb.items():
-        fp.write(f'{key} {" ".join(chars)}')
+    for key in sorted(mb):
+        fp.write(f'{key} {" ".join(mb[key])}')
         fp.write('\n')
 
 import sys
